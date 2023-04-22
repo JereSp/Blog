@@ -1,18 +1,15 @@
 import Head from 'next/head'
 import { GraphQLClient, gql } from 'graphql-request'
+import PostCard from '@/components/PostCard'
 
 const hygraph = new GraphQLClient('https://api-sa-east-1.hygraph.com/v2/clgid9s1c27x401ug1lf64rak/master')
   const QUERY = gql`
   query Posts {
     posts {
       date
-      id
       slug
       image {
         url
-      }
-      content{
-        html
       }
       title
     }
@@ -31,7 +28,10 @@ export async function getStaticProps() {
 }
 
 export default function Home({posts}) {
-
+  let orderedPosts = posts.sort((a, b) => {
+    return new Date(b.date) - new Date (a.date)
+  })
+  console.log("ordenados", orderedPosts)
   return (
     <>
       <Head>
@@ -42,10 +42,9 @@ export default function Home({posts}) {
       </Head>
       <div>
         {posts.map((post) => {
+          console.log(post)
           return (
-            <div>
-              {post.title}
-            </div>
+            <PostCard title= {post.title} image={post.image.url} date={post.date} slug={post.slug}/>
           )
         })}
       </div>
